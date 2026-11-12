@@ -12,7 +12,6 @@ import {
   FileText
 } from 'lucide-react';
 
-// Массив практик
 const PRACTICES = [
   { id: 1, sheet: "053-М", topic: "Анализ бизнес-процессов медиацентра ТУСУР", company: "Центр компетенций ТУСУР (ЦК ТУСУР)", direction: "Анализ бизнес-процессов" },
   { id: 2, sheet: "053-М", topic: "Совершенствование методов разработки программных продуктов ЛИСМО ТУСУР", company: "ИИ ТУСУР, Лаборатория ЛИСМО", direction: "Совершенствование методов разработки" },
@@ -32,7 +31,7 @@ const PRACTICES = [
   { id: 16, sheet: "014-М", topic: "Анализ метода оценивания компетенций при помощи искусственного интеллекта", company: "кафедра УИ, лаборатория робототехники манипуляторов", direction: "Анализ метода" },
   { id: 17, sheet: "014-М", topic: "Проектирование и разработка инновационного детектора напряжения на высоковольтных проводах", company: "ООО 'Трансмаш-Томск'", direction: "Проектирование инновационного детектора" },
   { id: 18, sheet: "014-М", topic: "Реинжиниринг системы автоматизации секции грануляции полипропилена", company: "ООО НПП 'ТЭК'", direction: "Реинжиниринг" },
-  { id: 19, sheet: "014-М", topic: "Разработка концепции цифровой трансформации на основе финтех-решений", company: "ППОС ТУСУР", direction: "Цифровая трансформация" },
+  { id: 19, sheet: "014-М", topic: "Разработка концепции цифровой трансформации на основе финтех-решений", company: "ППОС ТУСУР", direction: "Цифровая трансформация/управление рисками" },
   { id: 20, sheet: "014-М", topic: "Инновационные технологии реализации государственной молодежной политики", company: "ТОО Общероссийского профсоюза образования", direction: "Анализ ППОС" },
   { id: 21, sheet: "051", topic: "Проектирование карты процесса СМК 'Управление документацией' для АО 'НИИПП'", company: "АО 'Научно-исследовательский институт полупроводниковых приборов'", direction: "Управление документацией" },
   { id: 22, sheet: "051", topic: "Разработка проекта инструкции на процесс 'Тестирование программного обеспечения'", company: "Лаборатория ЛИСМО, ИИ ТУСУР", direction: "Разработка документации" },
@@ -122,9 +121,41 @@ const PRACTICES = [
   { id: 106, sheet: "023", topic: "ПРОЕКТИРОВАНИЕ И ТЕСТИРОВАНИЕ ПО ДЛЯ АНАЛИЗА СОСТОЯНИЯ ОБОРУДОВАНИЯ", company: "ООО 'ИНТ'", direction: "Разработка" }
 ];
 
+const AREA_DIRECTIONS = {
+  'Документооборот': [
+    'Управление документацией', 'Разработка документации', 'Аудит', 'Управление процессами',
+    'Анализ процесса', 'Оптимизация процесса', 'Разработка регламента', 'Разработка методики',
+    'Внедрение стандарта', 'Моделирование процесса', 'Моделирование и цифровизация процесса',
+    'Разработка процессов', 'Разработка программы', 'Актуализация руководства по качеству',
+    'Управление качеством', 'Анализ стандартов и аудита', 'Анализ рисков', 'Анализ и управление рисками',
+    'Разработка стандарта', 'Моделирование бизнес-процесса', 'Разработка карты бизнес-процессов',
+    'Автоматизация бизнес-процессов', 'Реинжиниринг', 'Цифровая трансформация/управление рисками',
+    'Анализ ППОС', 'Оптимизация процессов', 'Анализ бизнес-процессов', 'Совершенствование методов разработки',
+    'Анализ процессов'
+  ],
+  'Инновационная деятельность': [
+    'Моделирование', 'Разработка системы', 'Разработка трекера успеваемости', 'Анализ методик',
+    'Анализ потребителей', 'Анализ рынка', 'Научно-исследовательская деятельность',
+    'Разработка бизнес-плана', 'Анализ проекта/партнеров', 'Проектирование инновационного детектора',
+    'Исследование', 'Анализ метода', 'Оптимизация производства', 'Реализация проекта',
+    'Разработка методических пособий'
+  ],
+  'Программирование': [
+    'Разработка ПО', 'Интеграция ПО', 'Программирование микроконтроллера', 'Разработка игры',
+    'Разработка чат-бота', 'Разработка веб-сайта', 'Разработка сайта', 'Разработка сервиса',
+    'Подготовка среды разработки', 'Frontend/веб-дизайн', 'Тестирование ПО',
+    'Разработка системы учета', 'Обслуживание оборудования', 'Автоматизация процесса',
+    'Разработка системы', 'Разработка', 'Автоматизация'
+  ],
+  'Робототехника': [
+    'Роботизация процессов', 'Робототехника', 'Мониторинг', 'Проектирование макета'
+  ]
+};
+
 const PRACTICE_SHEET = 'Все направления';
 const PRACTICE_COMPANY = 'Все места практики';
 const PRACTICE_DIRECTION = 'Все направления практики';
+const PRACTICE_AREA = 'Все области';
 
 const sortWithAllFirst = (a, b, allValue) => {
   if (a === allValue) return -1;
@@ -135,46 +166,68 @@ const sortWithAllFirst = (a, b, allValue) => {
 const barColors = ['bg-tusur-blue', 'bg-tusur-purple', 'bg-tusur-green', 'bg-blue-500', 'bg-indigo-500'];
 
 export default function InternshipPlatform() {
+  const [selectedArea, setSelectedArea] = useState(PRACTICE_AREA);
   const [selectedSheet, setSelectedSheet] = useState(PRACTICE_SHEET);
   const [selectedCompany, setSelectedCompany] = useState(PRACTICE_COMPANY);
   const [selectedDirection, setSelectedDirection] = useState(PRACTICE_DIRECTION);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const availableDirectionsByArea = useMemo(() => {
+    if (selectedArea === PRACTICE_AREA) {
+      return [...new Set(PRACTICES.map(p => p.direction))].sort();
+    }
+    return AREA_DIRECTIONS[selectedArea] || [];
+  }, [selectedArea]);
+
   const availableSheets = useMemo(() => {
     const filtered = PRACTICES.filter(p => 
       (selectedCompany === PRACTICE_COMPANY || p.company === selectedCompany) &&
-      (selectedDirection === PRACTICE_DIRECTION || p.direction === selectedDirection)
+      (selectedDirection === PRACTICE_DIRECTION || p.direction === selectedDirection) &&
+      (selectedArea === PRACTICE_AREA || AREA_DIRECTIONS[selectedArea]?.includes(p.direction))
     );
     return [PRACTICE_SHEET, ...new Set(filtered.map(p => p.sheet))].sort((a, b) => sortWithAllFirst(a, b, PRACTICE_SHEET));
-  }, [selectedCompany, selectedDirection]);
+  }, [selectedCompany, selectedDirection, selectedArea]);
 
   const availableCompanies = useMemo(() => {
     const filtered = PRACTICES.filter(p => 
       (selectedSheet === PRACTICE_SHEET || p.sheet === selectedSheet) &&
-      (selectedDirection === PRACTICE_DIRECTION || p.direction === selectedDirection)
+      (selectedDirection === PRACTICE_DIRECTION || p.direction === selectedDirection) &&
+      (selectedArea === PRACTICE_AREA || AREA_DIRECTIONS[selectedArea]?.includes(p.direction))
     );
     return [PRACTICE_COMPANY, ...new Set(filtered.map(p => p.company))].sort((a, b) => sortWithAllFirst(a, b, PRACTICE_COMPANY));
-  }, [selectedSheet, selectedDirection]);
+  }, [selectedSheet, selectedDirection, selectedArea]);
 
   const availableDirections = useMemo(() => {
     const filtered = PRACTICES.filter(p => 
       (selectedSheet === PRACTICE_SHEET || p.sheet === selectedSheet) &&
-      (selectedCompany === PRACTICE_COMPANY || p.company === selectedCompany)
+      (selectedCompany === PRACTICE_COMPANY || p.company === selectedCompany) &&
+      (selectedArea === PRACTICE_AREA || AREA_DIRECTIONS[selectedArea]?.includes(p.direction))
     );
-    return [PRACTICE_DIRECTION, ...new Set(filtered.map(p => p.direction))].sort((a, b) => sortWithAllFirst(a, b, PRACTICE_DIRECTION));
-  }, [selectedSheet, selectedCompany]);
+    const directions = [...new Set(filtered.map(p => p.direction))].sort((a, b) => sortWithAllFirst(a, b, PRACTICE_DIRECTION));
+    
+    if (selectedArea !== PRACTICE_AREA) {
+      return [PRACTICE_DIRECTION, ...availableDirectionsByArea.filter(d => directions.includes(d))];
+    }
+    return directions;
+  }, [selectedSheet, selectedCompany, selectedArea, availableDirectionsByArea]);
+
+  const handleAreaChange = (val) => {
+    setSelectedArea(val);
+    setSelectedDirection(PRACTICE_DIRECTION);
+  };
 
   const filteredPractices = useMemo(() => {
     return PRACTICES.filter(p => {
+      const matchArea = selectedArea === PRACTICE_AREA || AREA_DIRECTIONS[selectedArea]?.includes(p.direction);
       const matchSheet = selectedSheet === PRACTICE_SHEET || p.sheet === selectedSheet;
       const matchCompany = selectedCompany === PRACTICE_COMPANY || p.company === selectedCompany;
       const matchDirection = selectedDirection === PRACTICE_DIRECTION || p.direction === selectedDirection;
       const matchSearch = searchQuery === '' || 
         p.topic.toLowerCase().includes(searchQuery.toLowerCase()) || 
         p.company.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchSheet && matchCompany && matchDirection && matchSearch;
+      return matchArea && matchSheet && matchCompany && matchDirection && matchSearch;
     });
-  }, [selectedSheet, selectedCompany, selectedDirection, searchQuery]);
+  }, [selectedArea, selectedSheet, selectedCompany, selectedDirection, searchQuery]);
 
   const stats = useMemo(() => {
     const total = filteredPractices.length;
@@ -193,9 +246,10 @@ export default function InternshipPlatform() {
     return { total, companies, topDirections };
   }, [filteredPractices]);
 
-  const isFiltered = selectedSheet !== PRACTICE_SHEET || selectedCompany !== PRACTICE_COMPANY || selectedDirection !== PRACTICE_DIRECTION || searchQuery !== '';
+  const isFiltered = selectedArea !== PRACTICE_AREA || selectedSheet !== PRACTICE_SHEET || selectedCompany !== PRACTICE_COMPANY || selectedDirection !== PRACTICE_DIRECTION || searchQuery !== '';
 
   const handleReset = () => {
+    setSelectedArea(PRACTICE_AREA);
     setSelectedSheet(PRACTICE_SHEET);
     setSelectedCompany(PRACTICE_COMPANY);
     setSelectedDirection(PRACTICE_DIRECTION);
@@ -203,257 +257,259 @@ export default function InternshipPlatform() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
-      <header className="bg-tusur-blue text-white shadow-lg flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-center">
-          <img src="/logo.svg" alt="ТУСУР" className="h-16 w-auto" />
-        </div>
-      </header>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      {/* Hero */}
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-tusur-blue tracking-tight mb-4">Дашборд практик ТУСУР</h2>
+        <p className="text-slate-500 max-w-2xl mx-auto">Аналитическая панель баз практик. Фильтры синхронизированы: выбор одного параметра автоматически сужает варианты в остальных, а диаграммы обновляются в реальном времени.</p>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-        
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-tusur-blue tracking-tight mb-4">Практики ТУСУР</h2>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8 lg:sticky lg:top-1 lg:z-30">
-          <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-            
-            <div className="flex-1 flex flex-col">
-              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
-                <GraduationCap className="text-tusur-purple w-4 h-4 flex-shrink-0" />
-                Направление подготовки
-              </label>
-              <div className="relative flex-1 flex items-center">
-                <select
-                  value={selectedSheet}
-                  onChange={(e) => setSelectedSheet(e.target.value)}
-                  className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
-                >
-                  {availableSheets.map(sheet => (
-                    <option key={sheet} value={sheet}>{sheet}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
-              </div>
+      {/* Controls Panel - Sticky */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8 lg:sticky lg:top-24 lg:z-30">
+        <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+          
+          {/* Область практики */}
+          <div className="flex-1 flex flex-col">
+            <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
+              <Layers className="text-tusur-purple w-4 h-4 flex-shrink-0" />
+              Область практики
+            </label>
+            <div className="relative flex-1 flex items-center">
+              <select
+                value={selectedArea}
+                onChange={(e) => handleAreaChange(e.target.value)}
+                className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
+              >
+                <option value={PRACTICE_AREA}>Все области</option>
+                <option value="Документооборот">Документооборот</option>
+                <option value="Инновационная деятельность">Инновационная деятельность</option>
+                <option value="Программирование">Программирование</option>
+                <option value="Робототехника">Робототехника</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
             </div>
+          </div>
 
-            <div className="flex-1 flex flex-col">
-              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
-                <Building2 className="text-tusur-purple w-4 h-4 flex-shrink-0" />
-                Место практики
-              </label>
-              <div className="relative flex-1 flex items-center">
-                <select
-                  value={selectedCompany}
-                  onChange={(e) => setSelectedCompany(e.target.value)}
-                  className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
-                >
-                  {availableCompanies.map(company => (
-                    <option key={company} value={company}>{company}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
-              </div>
+          {/* Направление подготовки */}
+          <div className="flex-1 flex flex-col">
+            <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
+              <GraduationCap className="text-tusur-purple w-4 h-4 flex-shrink-0" />
+              Направление подготовки
+            </label>
+            <div className="relative flex-1 flex items-center">
+              <select
+                value={selectedSheet}
+                onChange={(e) => setSelectedSheet(e.target.value)}
+                className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
+              >
+                {availableSheets.map(sheet => (
+                  <option key={sheet} value={sheet}>{sheet}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
             </div>
+          </div>
 
-            {/* Направление практики */}
-            <div className="flex-1 flex flex-col">
-              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
-                <Briefcase className="text-tusur-purple w-4 h-4 flex-shrink-0" />
-                Направление практики
-              </label>
-              <div className="relative flex-1 flex items-center">
-                <select
-                  value={selectedDirection}
-                  onChange={(e) => setSelectedDirection(e.target.value)}
-                  className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
-                >
-                  {availableDirections.map(dir => (
-                    <option key={dir} value={dir}>{dir}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
-              </div>
+          {/* Место практики */}
+          <div className="flex-1 flex flex-col">
+            <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
+              <Building2 className="text-tusur-purple w-4 h-4 flex-shrink-0" />
+              Место практики
+            </label>
+            <div className="relative flex-1 flex items-center">
+              <select
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+                className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
+              >
+                {availableCompanies.map(company => (
+                  <option key={company} value={company}>{company}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
             </div>
+          </div>
 
-            <div className="lg:w-72 flex flex-col">
-              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
-                <Search className="text-tusur-purple w-4 h-4 flex-shrink-0" />
-                Тема практики
-              </label>
-              <div className="relative flex-1 flex items-center">
-                <input
-                  type="text"
-                  placeholder="Поиск по теме или предприятию..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-12 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pl-10 font-sans transition-all"
-                />
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              </div>
+          {/* Направление практики */}
+          <div className="flex-1 flex flex-col">
+            <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
+              <Briefcase className="text-tusur-purple w-4 h-4 flex-shrink-0" />
+              Направление практики
+            </label>
+            <div className="relative flex-1 flex items-center">
+              <select
+                value={selectedDirection}
+                onChange={(e) => setSelectedDirection(e.target.value)}
+                className="w-full h-12 appearance-none bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pr-10 font-sans transition-all cursor-pointer"
+              >
+                {availableDirections.map(dir => (
+                  <option key={dir} value={dir}>{dir}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Поиск по теме */}
+          <div className="lg:w-72 flex flex-col">
+            <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2 h-6">
+              <Search className="text-tusur-purple w-4 h-4 flex-shrink-0" />
+              Тема практики
+            </label>
+            <div className="relative flex-1 flex items-center">
+              <input
+                type="text"
+                placeholder="Поиск по теме или предприятию..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-12 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-tusur-blue focus:border-tusur-blue px-4 pl-10 font-sans transition-all"
+              />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <h3 className="text-lg font-semibold text-slate-900 font-sans">
-            Найдено практик: <span className="text-tusur-blue font-bold">{filteredPractices.length}</span>
-          </h3>
-          {isFiltered && (
-            <button
-              onClick={handleReset}
-              className="text-sm text-tusur-purple hover:text-tusur-blue font-semibold flex items-center gap-1 transition-colors font-sans self-start sm:self-auto"
-            >
-              <X className="w-4 h-4" />
-              Сбросить фильтры
-            </button>
-          )}
-        </div>
+      {/* Results Count & Reset */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <h3 className="text-lg font-semibold text-slate-900 font-sans">
+          Найдено практик: <span className="text-tusur-blue font-bold">{filteredPractices.length}</span>
+        </h3>
+        {isFiltered && (
+          <button
+            onClick={handleReset}
+            className="text-sm text-tusur-purple hover:text-tusur-blue font-semibold flex items-center gap-1 transition-colors font-sans self-start sm:self-auto"
+          >
+            <X className="w-4 h-4" />
+            Сбросить фильтры
+          </button>
+        )}
+      </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start lg:pb-24">
-  
-          <aside className="w-full lg:w-80 flex flex-col gap-6 flex-shrink-0 lg:sticky lg:top-40 lg:z-20">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
-              <div className="p-3 bg-tusur-blue/10 rounded-xl mb-3">
-                <Layers className="text-tusur-blue w-6 h-6" />
-              </div>
-              <p className="text-sm text-slate-500 font-medium">Всего практик</p>
-              <p className="text-3xl font-bold text-slate-800 mt-1">{stats.total}</p>
+      {/* Dashboard & List Layout */}
+      <div className="flex flex-col lg:flex-row gap-8 items-start lg:pb-24">
+        
+        {/* Left Sidebar: Dynamic Dashboard Charts */}
+        <aside className="w-full lg:w-80 flex flex-col gap-6 flex-shrink-0 lg:sticky lg:top-48 lg:z-20">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
+            <div className="p-3 bg-tusur-blue/10 rounded-xl mb-3">
+              <Layers className="text-tusur-blue w-6 h-6" />
             </div>
+            <p className="text-sm text-slate-500 font-medium">Всего практик</p>
+            <p className="text-3xl font-bold text-slate-800 mt-1">{stats.total}</p>
+          </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
-              <div className="p-3 bg-tusur-purple/10 rounded-xl mb-3">
-                <Building2 className="text-tusur-purple w-6 h-6" />
-              </div>
-              <p className="text-sm text-slate-500 font-medium">Предприятий-партнёров</p>
-              <p className="text-3xl font-bold text-slate-800 mt-1">{stats.companies}</p>
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
+            <div className="p-3 bg-tusur-purple/10 rounded-xl mb-3">
+              <Building2 className="text-tusur-purple w-6 h-6" />
             </div>
+            <p className="text-sm text-slate-500 font-medium">Предприятий-партнёров</p>
+            <p className="text-3xl font-bold text-slate-800 mt-1">{stats.companies}</p>
+          </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-              <h4 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                <Target className="text-tusur-green w-4 h-4" />
-                Топ направлений
-              </h4>
-              <div className="space-y-4">
-                {stats.topDirections.map((dir, index) => {
-                  const percentage = stats.total > 0 ? (dir.count / stats.total) * 100 : 0;
-                  const colorClass = barColors[index % barColors.length];
-                  return (
-                    <div key={dir.name}>
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="text-slate-600 font-medium truncate pr-2" title={dir.name}>
-                          {dir.name}
-                        </span>
-                        <span className="text-slate-800 font-bold flex-shrink-0">{dir.count}</span>
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h4 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+              <Target className="text-tusur-green w-4 h-4" />
+              Топ направлений
+            </h4>
+            <div className="space-y-4">
+              {stats.topDirections.map((dir, index) => {
+                const percentage = stats.total > 0 ? (dir.count / stats.total) * 100 : 0;
+                const colorClass = barColors[index % barColors.length];
+                return (
+                  <div key={dir.name}>
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="text-slate-600 font-medium truncate pr-2" title={dir.name}>
+                        {dir.name}
+                      </span>
+                      <span className="text-slate-800 font-bold flex-shrink-0">{dir.count}</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${percentage}%` }}
+                        transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
+                        className={`${colorClass} h-2.5 rounded-full`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+              {stats.topDirections.length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-4">Нет данных для отображения</p>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        {/* Right Content: Practices List */}
+        <div className="flex-1 w-full">
+          <AnimatePresence mode="popLayout">
+            {filteredPractices.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+                {filteredPractices.map((practice) => (
+                  <motion.div
+                    key={practice.id}
+                    layout
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white rounded-2xl border border-slate-200 hover:shadow-lg hover:border-tusur-blue/30 transition-all duration-300 flex flex-col overflow-hidden group"
+                  >
+                    <div className="p-6 flex-1 relative">
+                      <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <FileText className="w-24 h-24 text-tusur-blue" />
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${percentage}%` }}
-                          transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
-                          className={`${colorClass} h-2.5 rounded-full`}
-                        />
+                      
+                      <div className="flex justify-between items-start mb-3 relative z-10">
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-tusur-lightBlue/20 text-tusur-blue font-sans">
+                          {practice.sheet}
+                        </span>
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-tusur-purple/10 text-tusur-purple font-sans">
+                          {practice.direction}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2 font-sans leading-tight relative z-10">
+                        {practice.topic}
+                      </h3>
+                      
+                      <div className="flex flex-col gap-2 relative z-10">
+                        <div className="flex items-center gap-2 text-slate-600">
+                          <Building2 className="w-4 h-4 flex-shrink-0 text-tusur-green" />
+                          <span className="text-sm font-medium font-sans truncate">{practice.company}</span>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-                {stats.topDirections.length === 0 && (
-                  <p className="text-sm text-slate-400 text-center py-4">Нет данных для отображения</p>
-                )}
+
+                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+                      <button className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-tusur-blue border border-slate-200 text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md font-sans">
+                        Подробнее
+                        <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </div>
-          </aside>
-
-          <div className="flex-1 w-full">
-            <AnimatePresence mode="popLayout">
-              {filteredPractices.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
-                  {filteredPractices.map((practice) => (
-                    <motion.div
-                      key={practice.id}
-                      layout
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.3 }}
-                      className="bg-white rounded-2xl border border-slate-200 hover:shadow-lg hover:border-tusur-blue/30 transition-all duration-300 flex flex-col overflow-hidden group">
-                        
-                      <div className="p-6 flex-1 relative">
-                        <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                          <FileText className="w-24 h-24 text-tusur-blue" />
-                        </div>
-                        
-                        <div className="flex justify-between items-start mb-3 relative z-10">
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-tusur-lightBlue/20 text-tusur-blue font-sans">
-                            {practice.sheet}
-                          </span>
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-tusur-purple/10 text-tusur-purple font-sans">
-                            {practice.direction}
-                          </span>
-                        </div>
-                        
-                        <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2 font-sans leading-tight relative z-10">
-                          {practice.topic}
-                        </h3>
-                        
-                        <div className="flex flex-col gap-2 relative z-10">
-                          <div className="flex items-center gap-2 text-slate-600">
-                            <Building2 className="w-4 h-4 flex-shrink-0 text-tusur-green" />
-                            <span className="text-sm font-medium font-sans truncate">{practice.company}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
-                        <button className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-tusur-blue border border-slate-200 text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md font-sans">
-                          Подробнее
-                          <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300"
+              >
+                <div className="w-16 h-16 bg-tusur-lightBlue/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-tusur-blue" />
                 </div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300"
-                >
-                  <div className="w-16 h-16 bg-tusur-lightBlue/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-8 h-8 text-tusur-blue" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2 font-sans">Практики не найдены</h3>
-                  <p className="text-slate-500 max-w-md mx-auto font-sans">
-                    Попробуйте изменить параметры фильтрации или нажмите «Сбросить фильтры».
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2 font-sans">Практики не найдены</h3>
+                <p className="text-slate-500 max-w-md mx-auto font-sans">
+                  Попробуйте изменить параметры фильтрации или нажмите «Сбросить фильтры».
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </main>
-
-      <footer className="bg-tusur-blue text-white py-10 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="ТУСУР" className="h-10 w-auto" />
-              <span className="text-sm font-sans opacity-90">© 2026 Томский государственный университет систем управления и радиоэлектроники</span>
-            </div>
-            <div className="flex gap-8 text-sm font-sans">
-              <a href="https://tusur.ru" className="hover:text-tusur-lightBlue transition-colors flex items-center gap-2">
-                <span>Сайт университета</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-              </a>
-              <a href="https://engineers.tusur.ru" className="hover:text-tusur-lightBlue transition-colors flex items-center gap-2">
-                <span>ПИШ ТУСУР</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

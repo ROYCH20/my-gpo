@@ -1,100 +1,54 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function LoadingScreen({ onComplete }) {
-  const [progress, setProgress] = useState(0);
-  const [opacity, setOpacity] = useState(1);
-  const intervalRef = useRef(null);
+  const [fillWidth, setFillWidth] = useState(0);
+  const [logoOpacity, setLogoOpacity] = useState(1);
 
   useEffect(() => {
-    // Проверяем, что страница уже загружена
-    if (document.readyState === 'complete') {
-      handleLoadComplete();
-      return;
-    }
-
-    // Имитация прогресса до 90% (пока ресурсы грузятся)
-    let current = 0;
-    intervalRef.current = setInterval(() => {
-      current += Math.random() * 8 + 2; // случайный прирост 2-10%
-      if (current > 90) current = 90; // останавливаемся на 90% до реальной загрузки
-      setProgress(Math.floor(current));
-    }, 150);
-
-    // Реальное событие полной загрузки страницы
-    const handleLoad = () => {
-      clearInterval(intervalRef.current);
-      handleLoadComplete();
-    };
-
-    window.addEventListener('load', handleLoad);
-
-    return () => {
-      window.removeEventListener('load', handleLoad);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  const handleLoadComplete = () => {
-    // Доводим прогресс до 100%
-    setProgress(100);
-
-    // Даём пользователю увидеть "100%" и плавно скрываем
-    setTimeout(() => {
-      setOpacity(0);
-      setTimeout(() => {
-        if (onComplete) onComplete();
-      }, 600); // время CSS transition
-    }, 400);
-  };
+    const fillTimer = setTimeout(() => {
+      setFillWidth(215);
+      const fadeTimer = setTimeout(() => {
+        setLogoOpacity(0);
+        if (onComplete) setTimeout(onComplete, 300);
+      }, 1200);
+      return () => clearTimeout(fadeTimer);
+    }, 100);
+    return () => clearTimeout(fillTimer);
+  }, [onComplete]);
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-600 ease-in-out"
-      style={{
-        backgroundColor: '#3C388D',
-        opacity: opacity,
-        pointerEvents: opacity === 0 ? 'none' : 'auto',
-      }}
-    >
-      {/* Логотип с эффектом заполнения */}
-      <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
-        {/* Фоновый слой — контур логотипа (полупрозрачный) */}
-        <img
-          src="/logo.svg"
-          alt="ТУСУР"
-          className="absolute inset-0 w-full h-full opacity-20"
-          style={{ filter: 'brightness(0) invert(1)' }}
+    <div className="fixed inset-0 bg-[#3C388D] flex items-center justify-center z-[100]">
+      <svg
+        width="430"
+        height="92"
+        viewBox="0 0 215 46"
+        xmlns="http://www.w3.org/2000/svg"
+        className="block"
+        style={{
+          opacity: logoOpacity,
+          transition: 'opacity 0.3s ease-out',
+          pointerEvents: 'none',
+        }}
+      >
+        <defs>
+          <clipPath id="tusur-logo-clip">
+            <path fillRule="evenodd" clipRule="evenodd" d="M23.0747 41L23.1281 12.5817H37.3361V5H0V12.5817H14.208V41H23.0747Z" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M204.733 5H177.546L177.492 40.947H186.412V32.1457H204.68C210.502 32.1457 215.202 27.4798 215.202 21.7009V15.4446C215.255 9.66545 210.555 5 204.733 5V5ZM206.549 24.7232H186.412V12.5819H206.549V24.7232Z" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M100.257 41H123.385V33.4183H98.6542V12.5817H123.385V5H100.257C94.4345 5 89.7341 9.66568 89.7341 15.4446V30.5552C89.7341 36.3345 94.4347 41 100.257 41Z" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M66.9981 40.947L86.2034 5H77.0553L65.3472 26.9139L52.3564 5H43.2081L57.1986 28.9979C58.3192 30.9201 60.343 32.0994 62.5297 32.1048L62.5741 32.105L57.8501 40.9472H66.9981V40.947Z" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M148.411 32.105L148.456 32.1053L143.732 40.9475H152.88L172.085 5.00049H162.937L151.229 26.9144L138.238 5.00049H129.09L143.08 28.9984C144.201 30.9206 146.224 32.0999 148.411 32.105V32.105Z" />
+          </clipPath>
+        </defs>
+        <rect
+          x="0"
+          y="0"
+          width={fillWidth}
+          height="46"
+          fill="white"
+          clipPath="url(#tusur-logo-clip)"
+          style={{ transition: 'width 1.2s ease-out' }}
         />
-
-        {/* Заполняющий слой — белый логотип, обрезается clip-path */}
-        <div
-          className="absolute inset-0 overflow-hidden"
-          style={{
-            clipPath: `inset(${100 - progress}% 0 0 0)`,
-            transition: 'clip-path 0.2s ease-out',
-          }}
-        >
-          <img
-            src="/logo.svg"
-            alt="ТУСУР"
-            className="w-full h-full"
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
-        </div>
-
-        {/* Декоративная линия прогресса под логотипом */}
-        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-48 h-1 bg-white/20 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-200 ease-out"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Проценты */}
-      <div className="mt-16 text-white font-bold text-3xl md:text-4xl tracking-wider">
-        {progress}%
-      </div>
+      </svg>
     </div>
   );
 }
