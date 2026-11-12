@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { User, Upload, Search, Download, X, Check } from 'lucide-react';
