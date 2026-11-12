@@ -31,7 +31,7 @@ jobs:
       - name: Configure AWS CLI for Yandex Cloud
         run: |
           aws configure set aws_access_key_id ${{ secrets.YC_KEY_ID }}
-          aws configure set aws_secret_access_key "${{ secrets.YC_SECRET_KEY }}"
+          aws configure set aws_secret_access_key ${{ secrets.YC_SECRET_KEY }}
           aws configure set default.region ru-central1
 
       - name: Deploy to Yandex Object Storage
@@ -43,4 +43,4 @@ jobs:
             --cache-control "no-cache"
         
       - name: Deployment complete
-        run: echo "✅ Сайт обновлён! https://${{ secrets.YC_BUCKET_NAME }}.ru-central1.yandexcloud.net"
+        run: echo "✅ Сайт обновлён!"
